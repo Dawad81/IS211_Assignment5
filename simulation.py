@@ -8,6 +8,9 @@ import csv
 import urllib2
 
 
+
+
+
 url = 'http://s3.amazonaws.com/cuny-is211-spring2015/requests.csv'
 
 
