@@ -5,6 +5,7 @@
 
 import argparse
 import csv
+import datetime
 import urllib2
 
 
@@ -28,9 +29,7 @@ class Queue(object):
         return len(self.items)
 
 class Server(object):
-    def __init__(self, ppm):
-        self.page_rate = ppm
-       
+    def __init__(self):
         self.current_task = None
         self.time_remaining = 0
 
@@ -48,57 +47,61 @@ class Server(object):
 
     def start_next(self, new_task):
         self.current_task = new_task
-        self.time_remaining = new_task.get_pages() * 60 / self.page_rate
+        self.time_remaining = new_task.process_time()
 
 
 class Request(object):
-    def __init__(self, time):
+    def __init__(self, time, request_time):
         self.timestamp = time
-        #self.pages = random.randrange(1, 21)
+        self.request_time = request_time
 
     def get_stamp(self):
         return self.timestamp
 
-    def get_pages(self):
-        return self.pages
+    def process_time(self):
+        return self.request_time
 
     def wait_time(self, current_time):
         return current_time - self.timestamp
 
 
-def simulateOneServer(num_seconds, time) pages_per_minute):
-    server = Server(time) #(pages_per_minute)
-    request = Queue()
+def simulateOneServer(second_requested, time_needed):
+    second_requested = int(second_requested)
+    time_needed = int(time_needed)
+    server = Server()
+    queue = Queue()
     waiting_times = []
-    for current_second in range(num_seconds):
-        if new_print_task():
-            task = Task(current_second)
-            print_queue.enqueue(task)
-
-        if (not lab_printer.busy()) and (not print_queue.is_empty()):
-            next_task = print_queue.dequeue()
+    request = Request(second_requested, time_needed)
+    queue.enqueue(request)
+    for current_second in range(second_requested):
+        if (not server.busy()) and (not queue.is_empty()):
+            next_task = queue.dequeue()
             waiting_times.append(next_task.wait_time(current_second))
-            lab_printer.start_next(next_task)
+            server.start_next(next_task)
 
-        lab_printer.tick()
+        server.tick()
     average_wait = sum(waiting_times) / len(waiting_times)
-    print("Average Wait %6.2f secs %3d tasks remaining." %(average_wait, print_queue.size()))
+    print("Average Wait %6.2f secs %3d tasks remaining." %(average_wait, queue.size()))
 
 
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--file", help="Enter a URL to begin.", required=True)
-    #parser.add_argument("--servers", help="Enter # of servers to be used.", type=int, required= false, default=1)
+    #parser.add_argument("--servers", type=int, default=1)
     args = parser.parse_args()
     try:
-        downloadcsvfile = urllib2.urlopen(url)
+        downloadcsvfile = urllib2.urlopen(args.file)
         reader = csv.reader(downloadcsvfile)
         lines = 0
         for row in reader:
-            simulateOneServer(args.file) #csvData = downloadData(args.url)
+            simulateOneServer(row[0], row[2])
     except:
         print 'An error has occured session terminated.\n\
         Exiting the program......Good Bye.'
-        raise SystemExit
-    else:
-        pass #processData(csvData)
+        raise #SystemExit
+    #else:
+        #pass #processData(csvData)
+
+
+if __name__ =='__main__':
+    main()
