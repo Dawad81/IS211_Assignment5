@@ -5,7 +5,6 @@
 
 import argparse
 import csv
-import datetime
 import urllib2
 
 
@@ -71,9 +70,13 @@ def simulateOneServer(second_requested, time_needed):
     server = Server()
     queue = Queue()
     waiting_times = []
-    request = Request(second_requested, time_needed)
-    queue.enqueue(request)
+    #request = Request(second_requested, time_needed)
+    #queue.enqueue(request)
     for current_second in range(second_requested):
+        request = Request(second_requested, time_needed)
+        queue.enqueue(request)
+        #    task = Request(current_second)
+        #    queue.enqueue(task)
         if (not server.busy()) and (not queue.is_empty()):
             next_task = queue.dequeue()
             waiting_times.append(next_task.wait_time(current_second))
@@ -82,6 +85,14 @@ def simulateOneServer(second_requested, time_needed):
         server.tick()
     average_wait = sum(waiting_times) / len(waiting_times)
     print("Average Wait %6.2f secs %3d tasks remaining." %(average_wait, queue.size()))
+#def new_server_task():
+#    num = random.randrange(1, 181)
+#    if num == 180:
+#        return True
+#    else:
+#        return False
+
+simulateOneServer(10000,50)
 
 
 def main():
