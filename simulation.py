@@ -77,9 +77,9 @@ class Request(object):
         """Returns the time required to process the request."""
         return self.request_time
 
-    def wait_time(self, second_requested):
+    def wait_time(self, current_time):
         """Caluculates the wait time for the request."""
-        return self.timestamp - self.request_time
+        return current_time - self.timestamp
 
 
 def simulateOneServer(downloadcsvfile):
@@ -98,7 +98,7 @@ def simulateOneServer(downloadcsvfile):
         $ python simulation.py --file
         "http://s3.amazonaws.com/cuny-is211-spring2015/requests.csv"
 
-        >>> Average Wait 2501.00 secs 5006 tasks remaining.
+        >>> Average Wait 2502.00 secs 5006 tasks remaining.
     """
     reader = csv.reader(downloadcsvfile)
     server = Server()
@@ -139,9 +139,9 @@ def simulateManyServer(downloadcsvfile, num_server):
 
         $ python simulation.py --file
         "http://s3.amazonaws.com/cuny-is211-spring2015/requests.csv"
-        --servers 3
+        --servers 2
 
-        >>> Average Wait 5004.00 secs   0 tasks remaining.
+        >>> Average Wait  16.00 secs  23 tasks remaining.
     """
     server_list = []
     for num in range(0, int(num_server)):
